@@ -49,3 +49,25 @@ get '/editor/?' do
     output.to_json
   end
 end
+
+get '/topic/?' do
+  start_time = Time.at(params[:start].to_i)
+  end_time = Time.at(params[:end].to_i)
+  difference = (end_time - start_time).to_i
+
+  if params[:start].nil? or params[:end].nil? or difference <= 0
+    throw :halt, [400, {:message => "Bad request"}.to_json]
+  elsif difference > 864000
+    throw :halt, [413, {:message => "Request Entity Too Large"}.to_json]
+  else
+    results = repository(:default).adapter.select(
+      'SELECT DISTINCT(topic), SUM(line_changes) FROM changes GROUP BY topic ORDER BY topic'
+    )
+
+    output = [ ]
+    results.each do |result|
+      output << { result["topic"] => result["sum(line_changes)"] }
+    end
+    output.to_json
+  end
+end
