@@ -28,7 +28,7 @@ get '/' do
   end
 end
 
-get '/user/?' do
+get '/editor/?' do
   start_time = Time.at(params[:start].to_i)
   end_time = Time.at(params[:end].to_i)
   difference = (end_time - start_time).to_i
