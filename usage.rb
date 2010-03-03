@@ -44,7 +44,7 @@ get '/editor/?' do
 
     output = [ ]
     results.each do |result|
-      output << "#{{ result["editor"] => result["sum(line_changes)"] }}"
+      output << { result["editor"] => result["sum(line_changes)"] }
     end
     output.to_json
   end
