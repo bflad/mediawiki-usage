@@ -1,16 +1,17 @@
 require 'rubygems'
-require 'sqlite3'
 require 'dm-core'
 require 'openssl'
 require 'open-uri'
 require 'hpricot'
 require 'time'
+require 'yaml'
 require 'digest/md5'
 require 'lib/change'
 
+CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml") and File.readable?("config/database.yml")
 MEDIA_WIKI_URL = "https://mediawiki.wharton.upenn.edu/wcit/Special:RecentChanges"
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/usage.db")
+DataMapper.setup(:default, "mysql://#{CONFIG['username']}:#{CONFIG['password']}@#{CONFIG['host']}/#{CONFIG['database']}")
 DataMapper.auto_upgrade!
 
 def get_topic(li)
