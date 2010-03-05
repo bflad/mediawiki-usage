@@ -1,13 +1,14 @@
 require 'rubygems'
 require 'sinatra'
-require 'sqlite3'
+require 'mysql'
 require 'dm-core'
 require 'dm-aggregates'
 require 'json'
 require 'lib/change'
 
 configure :production, :development do
-  DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/usage.db")
+  CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml") and File.readable?("config/database.yml")
+  DataMapper.setup(:default, "mysql://#{CONFIG['username']}:#{CONFIG['password']}@#{CONFIG['host']}/#{CONFIG['database']}")
 end
 
 before do
