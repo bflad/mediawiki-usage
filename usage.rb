@@ -22,6 +22,7 @@ before do
 end
 
 get '/' do
+  headers "Content-Type" => "text/html; charset=utf-8"
   haml :index
 end
 
