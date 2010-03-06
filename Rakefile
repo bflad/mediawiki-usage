@@ -8,10 +8,17 @@ require 'yaml'
 require 'digest/md5'
 require 'lib/change'
 
-CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml") and File.readable?("config/database.yml")
+CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
 MEDIA_WIKI_URL = "https://mediawiki.wharton.upenn.edu/wcit/Special:RecentChanges"
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-DataMapper.setup(:default, "mysql://#{CONFIG['username']}:#{CONFIG['password']}@#{CONFIG['host']}/#{CONFIG['database']}")
+
+DataMapper.setup(:default, {
+  :adapter => CONFIG['adapter'],
+  :host => CONFIG['host'],
+  :username => CONFIG['username'],
+  :password => CONFIG['password'],
+  :database => CONFIG['database']
+})
 DataMapper.auto_upgrade!
 
 def get_topic(li)
