@@ -70,11 +70,11 @@ get '/pages/?' do
       throw :halt, [413, {:message => "Request Entity Too Large"}.to_json]
     else
       results = repository(:default).adapter.select(
-        'SELECT DISTINCT(topic), SUM(line_changes) AS total FROM changes WHERE changed_at >= FROM_UNIXTIME(?) AND changed_at <= FROM_UNIXTIME(?) GROUP BY topic',
+        'SELECT DISTINCT(page), SUM(line_changes) AS total FROM changes WHERE changed_at >= FROM_UNIXTIME(?) AND changed_at <= FROM_UNIXTIME(?) GROUP BY page',
         start_time.to_i,
         end_time.to_i
       )
-      results.inject([ ]) { |output, struct| output << { struct['topic'] => struct['total'].to_i } }.to_json
+      results.inject([ ]) { |output, struct| output << { struct['page'] => struct['total'].to_i } }.to_json
     end
   end
 end

@@ -21,7 +21,7 @@ DataMapper.setup(:default, {
 })
 DataMapper.auto_upgrade!
 
-def get_topic(li)
+def get_page(li)
   (li/"a").each do |link|
     return link.inner_html if not link.inner_html == "diff" and not link.inner_html == "hist"
   end
@@ -47,15 +47,15 @@ task :cron do
       first_link = (change/"a")[0].inner_html
 
       if first_link == "diff" or first_link == "hist"
-        topic = get_topic(change)
+        page = get_page(change)
         changed_at = get_changed_at(day, change)
         line_changes = get_line_changes(change)
         editor = get_editor(change)
-        change_hash = Digest::MD5.hexdigest("#{topic}#{changed_at}#{line_changes}#{editor}")
+        change_hash = Digest::MD5.hexdigest("#{page}#{changed_at}#{line_changes}#{editor}")
         
         params = {:change => {
           :change_hash => change_hash,
-          :topic => topic,
+          :page => page,
           :changed_at => changed_at,
           :line_changes => line_changes,
           :editor => editor
