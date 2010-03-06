@@ -21,6 +21,10 @@ before do
   headers "Content-Type" => "application/json; charset=utf-8"
 end
 
+get '/' do
+  haml :index
+end
+
 get '/count/?' do
   if params[:start].nil? or params[:end].nil?
     throw :halt, [400, {:message => "Bad request"}.to_json]
