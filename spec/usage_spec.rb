@@ -44,7 +44,6 @@ describe "mediawiki-usage GET /count" do
   end
   
   it "should be successful with range parameters" do
-    @change = mock(Change)
     DataMapper.stub!(:setup).and_return(true)
     Change.stub!(:sum).and_return(0)
     
