@@ -37,7 +37,8 @@ get '/count/?' do
     unless difference > 0 and difference <= TEN_DAYS
       throw :halt, [413, {:message => "Request Entity Too Large"}.to_json]
     else
-      {:changes => Change.sum(:line_changes, :changed_at => (start_time..end_time))}.to_json
+      json = {:changes => Change.sum(:line_changes, :changed_at => (start_time..end_time))}.to_json
+      params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
     end
   end
 end
@@ -58,7 +59,8 @@ get '/editors/?' do
         start_time.to_i,
         end_time.to_i
       )
-      results.inject([ ]) { |output, struct| output << { struct['editor'] => struct['total'].to_i } }.to_json
+      json = results.inject([ ]) { |output, struct| output << { struct['editor'] => struct['total'].to_i } }.to_json
+      params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
     end
   end
 end
@@ -79,7 +81,8 @@ get '/pages/?' do
         start_time.to_i,
         end_time.to_i
       )
-      results.inject([ ]) { |output, struct| output << { struct['page'] => struct['total'].to_i } }.to_json
+      json = results.inject([ ]) { |output, struct| output << { struct['page'] => struct['total'].to_i } }.to_json
+      params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
     end
   end
 end
