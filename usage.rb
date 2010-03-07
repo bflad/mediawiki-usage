@@ -7,6 +7,7 @@ require 'lib/change'
 
 configure :production, :development do
   TEN_DAYS = 864000
+  TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
   @config = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
   DataMapper.setup(:default, {
     :adapter => @config['adapter'],
@@ -55,9 +56,9 @@ get '/editors/?' do
       throw :halt, [413, {:message => "Request Entity Too Large"}.to_json]
     else
       results = repository(:default).adapter.select(
-        'SELECT DISTINCT(editor), SUM(line_changes) AS total FROM changes WHERE changed_at >= FROM_UNIXTIME(?) AND changed_at <= FROM_UNIXTIME(?) GROUP BY editor',
-        start_time.to_i,
-        end_time.to_i
+        'SELECT DISTINCT(editor), SUM(line_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY editor',
+        start_time.strftime(TIME_FORMAT),
+        end_time.strftime(TIME_FORMAT)
       )
       json = results.inject([ ]) { |output, struct| output << { struct['editor'] => struct['total'].to_i } }.to_json
       params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
@@ -77,9 +78,9 @@ get '/pages/?' do
       throw :halt, [413, {:message => "Request Entity Too Large"}.to_json]
     else
       results = repository(:default).adapter.select(
-        'SELECT DISTINCT(page), SUM(line_changes) AS total FROM changes WHERE changed_at >= FROM_UNIXTIME(?) AND changed_at <= FROM_UNIXTIME(?) GROUP BY page',
-        start_time.to_i,
-        end_time.to_i
+        'SELECT DISTINCT(page), SUM(line_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY page',
+        start_time.strftime(TIME_FORMAT),
+        end_time.strftime(TIME_FORMAT)
       )
       json = results.inject([ ]) { |output, struct| output << { struct['page'] => struct['total'].to_i } }.to_json
       params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
