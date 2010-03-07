@@ -11,19 +11,24 @@
 
       #bd
         %h2
-          %code GET /count?start=[UNIX Timestamp]&end=[UNIX Timestamp]
+          %code GET /count?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=*[Local Function Name]
         %p
           Returns a JSON object with
           %code count
           as the key, and the actual count of all line changes as the value.
-
         %h2
-          %code GET /editors?start=[UNIX Timestamp]&end=[UNIX Timestamp]
+          %code GET /editors?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=*[Local Function Name]
         %p
           Returns an array of JSON objects with editor usernames as the keys and line change counts as their values.
 
         %h2
-          %code GET /pages?start=[UNIX Timestamp]&end=[UNIX Timestamp]
+          %code GET /pages?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=*[Local Function Name]
         %p
           Returns an array of JSON objects with page names as the keys and line change counts as the values.
       #ft
+        %h2 * Optional
+        %p
+          Providing a callback function is optional. To utilize JSON-P with jQuery, set
+          %code callback
+          to
+          %code ?.
