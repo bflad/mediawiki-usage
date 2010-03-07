@@ -50,6 +50,14 @@ describe "mediawiki-usage GET /count" do
     get '/count', @params
     last_response.body.should == "{\"changes\":0}"
   end
+  
+  it "should be successful with callback parameter" do
+    DataMapper.stub!(:setup).and_return(true)
+    Change.stub!(:sum).and_return(0)
+    
+    get '/count', @params.merge!(:callback => "test")
+    last_response.body.should == "test({\"changes\":0})"
+  end
 end
 
 describe "mediawiki-usage GET /editors" do
@@ -84,6 +92,14 @@ describe "mediawiki-usage GET /editors" do
     get '/editors', @params
     last_response.body.should == "[]"
   end
+  
+  it "should be successful with callback parameter" do
+    DataMapper.stub!(:setup).and_return(true)
+    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
+    
+    get '/editors', @params.merge!(:callback => "test")
+    last_response.body.should == "test([])"
+  end
 end
 
 describe "mediawiki-usage GET /pages" do
@@ -117,5 +133,13 @@ describe "mediawiki-usage GET /pages" do
     
     get '/pages', @params
     last_response.body.should == "[]"
+  end
+  
+  it "should be successful with callback parameter" do
+    DataMapper.stub!(:setup).and_return(true)
+    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
+    
+    get '/pages', @params.merge!(:callback => "test")
+    last_response.body.should == "test([])"
   end
 end
