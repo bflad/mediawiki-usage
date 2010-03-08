@@ -39,10 +39,10 @@ describe "mediawiki-usage GET /count" do
   end
   
   before do
-    @ten_days = 2592000
+    @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
-      :end => (Time.now + @ten_days).to_i
+      :end => (Time.now + @thirty_days).to_i
     }
   end
   
@@ -81,10 +81,10 @@ describe "mediawiki-usage GET /editors" do
   end
   
   before do
-    @ten_days = 2592000
+    @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
-      :end => (Time.now + @ten_days).to_i
+      :end => (Time.now + @thirty_days).to_i
     }
   end
   
@@ -123,10 +123,10 @@ describe "mediawiki-usage GET /pages" do
   end
  
   before do
-    @ten_days = 2592000
+    @@thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
-      :end => (Time.now + @ten_days).to_i
+      :end => (Time.now + @thirty_days).to_i
     }
   end
   

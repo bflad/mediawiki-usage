@@ -7,7 +7,7 @@ require 'haml'
 require 'lib/change'
 
 configure :production, :development do
-  TEN_DAYS = 2592000
+  THIRTY_DAYS = 2592000
   TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
   @config = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
   DataMapper.setup(:default, {
@@ -41,7 +41,7 @@ get '/count/?' do
     end_time = Time.at(params[:end].to_i)
     difference = (end_time - start_time).to_i
     
-    unless difference > 0 and difference <= TEN_DAYS
+    unless difference > 0 and difference <= THIRTY_DAYS
       throw :halt, [413, {:message => "Request Entity Too Large"}.to_json]
     else
       json = {:changes => Change.sum(:line_changes, :changed_at => (start_time..end_time))}.to_json
@@ -58,7 +58,7 @@ get '/editors/?' do
     end_time = Time.at(params[:end].to_i)
     difference = (end_time - start_time).to_i
     
-    unless difference > 0 and difference <= TEN_DAYS
+    unless difference > 0 and difference <= THIRTY_DAYS
       throw :halt, [413, {:message => "Request Entity Too Large"}.to_json]
     else
       results = repository(:default).adapter.select(
@@ -80,7 +80,7 @@ get '/pages/?' do
     end_time = Time.at(params[:end].to_i)
     difference = (end_time - start_time).to_i
     
-    unless difference > 0 and difference <= TEN_DAYS
+    unless difference > 0 and difference <= THIRTY_DAYS
       throw :halt, [413, {:message => "Request Entity Too Large"}.to_json]
     else
       results = repository(:default).adapter.select(
