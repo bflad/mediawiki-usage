@@ -1,20 +1,5 @@
-// for the charts and data table
-google.load('visualization', '1', {
-  packages: [
-    'piechart', 
-    'barchart', 
-    'columnchart', 
-    'scatterchart', 
-    'imagesparkline', 
-    'table']
-  }
-);
-  
-// jquery events and UI
-google.load("jquery", "1.4.2");
-google.load("jqueryui", "1.7.2");
 
-function init(){        
+function init(){          
   jQuery(function(){
     var dataTable = null, // will contain the dataTable later
       sources = {
@@ -88,10 +73,23 @@ function init(){
       autoHide: true
     });
     
-    // hack. can't figure out the script load chaining yet.
-    window.setTimeout(loadData, 3000); 
   });
 }
 
-// function to run after the scripts are loaded.
+// for the charts and data table
+google.load('visualization', '1', {
+  packages: [
+    'piechart', 
+    'barchart', 
+    'columnchart', 
+    'scatterchart', 
+    'imagesparkline', 
+    'table']
+  }
+);
+  
+// jquery events and UI
+google.load("jquery", "1.4.2");
+google.load("jqueryui", "1.7.2");
+
 google.setOnLoadCallback(init);
