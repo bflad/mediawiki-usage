@@ -5,33 +5,37 @@
     %title MediaWiki Usage Charts
     %link{ :href => "http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/base/jquery-ui.css", :media => "screen", :rel => "stylesheet", :type => "text/css" }
     %link{ :href => "css/charts.css", :media => "screen", :rel => "stylesheet", :type => "text/css" }
-    %script { :type => "text/javascript", :src => "http://www.google.com/jsapi?key=ABQIAAAAQq8ASr0atQOJz2zYh_77lBS5dIQS8R5ClMHpRstIagkeEL2RLBR6MsDUyGcXpsvQxMsOIX4ArMM2UA" }
-    %script { :type => "text/javascript", :src => "js/datejs.js" }
-    %script { :type => "text/javascript", :src => "js/charts.js" }
+    %script{ :type => "text/javascript", :src => "http://www.google.com/jsapi?key=ABQIAAAAQq8ASr0atQOJz2zYh_77lBS5dIQS8R5ClMHpRstIagkeEL2RLBR6MsDUyGcXpsvQxMsOIX4ArMM2UA" }
+    %script{ :type => "text/javascript", :src => "js/datejs.js" }
+    %script{ :type => "text/javascript", :src => "js/charts.js" }
     
   %body
-      #hd
-        %h1 MediaWiki Charts
+    #hd
+      %h1 MediaWiki Charts
 
-      #bd
-        %legend Visualization Options
-        %label { :for => "chartType" } Chart Type:
-        %select#chartType
-          %option { :value => "BarChart" } bar
-          %option { :value => "ColumnChart" } column
-          %option { :value => "PieChart", :selected => "selected" } pie
-          %option { :value => "ScatterChart" } scatter
-          %option { :value => "Table" } table
-        
-        %label { :for => "dataType" } Data:
-        %select#dataType
-          %option { :value => "editors", :selected => "selected" }
-          %option { :value => "pages" }
-        
-        %label { :for => "startTime" } Date Range:
-        %input.date#startTime
-        %label { :for => "endTime" } to
-        %input.date#endTime
-        %button#run Run
-      #ft
-        %p &nbsp;
+    #bd
+      %legend Visualization Options
+      %label{ :for => "chartType" } Chart Type:
+      %select#chartType
+        %option{ :value => "BarChart" } bar
+        %option{ :value => "ColumnChart" } column
+        %option{ :value => "PieChart", :selected => "selected" } pie
+        %option{ :value => "ScatterChart" } scatter
+        %option{ :value => "Table" } table
+      
+      %label{ :for => "dataType" } Data:
+      %select#dataType
+        %option{ :value => "editors", :selected => "selected" } editors
+        %option{ :value => "pages" } pages
+      
+      %label{ :for => "startTime" } Date Range:
+      %input.date#startTime
+      %label{ :for => "endTime" } to
+      %input.date#endTime
+      %button#run Run
+      
+      #visualization-container{:style => "width: 600px; height: 300px;"}
+        #visualization{:style => "height: 100%; width: 100%"} Loading chart...
+      
+    #ft
+      %p
