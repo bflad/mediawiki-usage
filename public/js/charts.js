@@ -89,7 +89,7 @@ function init(){
     });
     
     // hack. can't figure out the script load chaining yet.
-    window.setTimeout(loadData, 1000);
+    window.setTimeout(loadData, 3000); 
   });
 }
 
