@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe "mediawiki-usage GET /" do
+describe "mediawiki-usage GET /docs" do
   include Rack::Test::Methods
 
   def app
@@ -8,12 +8,25 @@ describe "mediawiki-usage GET /" do
   end
 
   it "should be successful" do
-    get '/'
+    get '/docs'
+    last_response.should be_ok
+  end
+end
+
+describe "mediawiki-usage GET /docs" do
+  include Rack::Test::Methods
+
+  def app
+    Sinatra::Application
+  end
+
+  it "should be successful" do
+    get '/docs'
     last_response.should be_ok
   end
   
   it "should respond with API documentation" do
-    get '/'
+    get '/docs'
     last_response.body.should =~ /API Documentation/
   end
 end
@@ -26,7 +39,7 @@ describe "mediawiki-usage GET /count" do
   end
   
   before do
-    @ten_days = 864000
+    @ten_days = 2592000
     @params = {
       :start => Time.now.to_i,
       :end => (Time.now + @ten_days).to_i
@@ -68,7 +81,7 @@ describe "mediawiki-usage GET /editors" do
   end
   
   before do
-    @ten_days = 864000
+    @ten_days = 2592000
     @params = {
       :start => Time.now.to_i,
       :end => (Time.now + @ten_days).to_i
@@ -110,7 +123,7 @@ describe "mediawiki-usage GET /pages" do
   end
  
   before do
-    @ten_days = 864000
+    @ten_days = 2592000
     @params = {
       :start => Time.now.to_i,
       :end => (Time.now + @ten_days).to_i

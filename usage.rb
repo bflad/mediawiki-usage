@@ -7,7 +7,7 @@ require 'haml'
 require 'lib/change'
 
 configure :production, :development do
-  TEN_DAYS = 864000
+  TEN_DAYS = 2592000
   TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
   @config = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
   DataMapper.setup(:default, {
