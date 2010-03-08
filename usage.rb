@@ -3,6 +3,7 @@ require 'sinatra'
 require 'dm-core'
 require 'dm-aggregates'
 require 'json'
+require 'haml'
 require 'lib/change'
 
 configure :production, :development do
@@ -24,7 +25,12 @@ end
 
 get '/' do
   headers "Content-Type" => "text/html; charset=utf-8"
-  haml :index
+  haml :index  
+end
+
+get '/docs/?' do
+  headers "Content-Type" => "text/html; charset=utf-8"
+  haml :docs
 end
 
 get '/count/?' do
