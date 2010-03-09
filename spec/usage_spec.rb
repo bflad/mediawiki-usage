@@ -123,7 +123,7 @@ describe "mediawiki-usage GET /pages" do
   end
  
   before do
-    @@thirty_days = 2592000
+    @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
       :end => (Time.now + @thirty_days).to_i
