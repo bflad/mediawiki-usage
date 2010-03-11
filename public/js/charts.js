@@ -56,8 +56,6 @@ function init(){
       dtm = dtm || new Date();
       return Math.round(new Date(dtm).getTime() / 1000);
     }
-    
-    googInit();
   
     // when the chart type changes, redraw
     $('#chartType').change(drawVisualization);
@@ -73,6 +71,9 @@ function init(){
       autoHide: true
     });
     
+    // must follow all the inits, especially
+    // default settings the end and start times
+    googInit();
   });
 }
 
