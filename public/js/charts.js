@@ -89,8 +89,5 @@ google.load('visualization', '1', {
   }
 );
   
-// jquery events and UI
-google.load("jquery", "1.4.2");
-google.load("jqueryui", "1.7.2");
 
 google.setOnLoadCallback(init);
