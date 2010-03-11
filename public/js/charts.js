@@ -74,6 +74,9 @@ function init(){
     // must follow all the inits, especially
     // default settings the end and start times
     googInit();
+    
+    // bleh?
+    setTimeout(drawVisualization, 4000); // redraw after 4 seconds
   });
 }
 
