@@ -4,29 +4,29 @@
 %script{ :type => "text/javascript", :src => "js/jquery-ui-1.7.2.custom.min.js" }
 %script{ :type => "text/javascript", :src => "js/datejs.js" }
 %script{ :type => "text/javascript", :src => "js/charts.js" }
-
 #hd
   %h1 MediaWiki Charts
 
 #bd
-  %label{ :for => "chartType" } Chart Type:
-  %select#chartType
-    %option{ :value => "BarChart" } bar
-    %option{ :value => "ColumnChart" } column
-    %option{ :value => "PieChart", :selected => "selected" } pie
-    %option{ :value => "ScatterChart" } scatter
-    %option{ :value => "Table" } table
+  #chart-options
+    %label{ :for => "chartType" } Chart Type:
+    %select#chartType
+      %option{ :value => "BarChart" } Bar
+      %option{ :value => "ColumnChart" } Column
+      %option{ :value => "PieChart", :selected => "selected" } Pie
+      %option{ :value => "ScatterChart" } Scatter
+      %option{ :value => "Table" } Table
   
-  %label{ :for => "dataType" } Data:
-  %select#dataType
-    %option{ :value => "editors", :selected => "selected" } editors
-    %option{ :value => "pages" } pages
+    %label{ :for => "dataType" } Data:
+    %select#dataType
+      %option{ :value => "editors", :selected => "selected" } Editors
+      %option{ :value => "pages" } Pages
   
-  %label{ :for => "startTime" } Date Range:
-  %input.date#startTime
-  %label{ :for => "endTime" } to
-  %input.date#endTime
-  %button#run Run
+    %label{ :for => "startTime" } Date Range:
+    %input.date#startTime
+    %label{ :for => "endTime" } to
+    %input.date#endTime
+    %button#run Run
   
   #visualization-container
     #visualization Loading chart...
