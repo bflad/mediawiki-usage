@@ -9,19 +9,12 @@ body { font-family: Helvetica, Arial; }
 
 /* Body */
 #bd { }
+#bd #visualization-container { border: 1px #eee solid; width: 600px; height: 300px; }
+#bd #visualization { height: 100%; width: 100% }
+
 #bd .doc-entry { margin: 0 0 2em 0; }
 #bd .doc-entry pre { margin: 1em 0 1em 0; }
 #bd .doc-entry pre code { color: #fff; background-color: #222; padding: .5em .5em .5em .5em; }
 #bd .doc-entry p { margin: 1.5em 0 0 0; }
 
 #ft h2 { font-size: 150%; font-weight: bold; margin: .5em 0 .5em 0; }
-
-#visualization-container {
-  border: 1px #EEE solid;
-  width: 600px; 
-  height: 300px;
-}
-#visualization {
-  height: 100%; 
-  width: 100%
-}
