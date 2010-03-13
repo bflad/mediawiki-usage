@@ -3,15 +3,26 @@ html { color: #222; }
 body { font-family: Helvetica, Arial; }
 #doc { margin-top: 3.5em; }
 
+/* Global */
+.clear { clear: both; }
+
 /* Header */
 #hd { padding: 2em 0 1em 0; }
-#hd h1 { font-size: 242%; font-weight: bold; }
+#hd h1 { font-size: 242%; font-weight: bold; margin: 0 0 .5em 0; }
 
 /* Body */
 #bd { }
-#bd #chart-options { margin: 0 0 2em 0; padding: 0 0 2em 0; border-bottom: 1px dashed #222; }
+#bd #chart-options { margin: 0 0 2.5em 0; padding: 0 0 2em 0; border-bottom: 1px dashed #222; }
+#bd #chart-options h2 { font-size: 120%; font-weight: bold; margin: 0 0 .5em 0; }
+#bd #chart-options #chart-type-container { float: left; margin: 0 3em 0 0; }
+#bd #chart-options #data-type-container { float: left; margin: 0 3em 0 0; }
+#bd #chart-options #date-range-container { float: left; }
+#bd #chart-options .selectors a { color: #999; font-size: 115%; text-decoration: none; }
+#bd #chart-options .selectors .selected { color: #222; }
+#bd #chart-options #startTime, #endTime { border: 1px #222 solid; padding: .1em; width: 200px; font-size: 150%; }
+
 #bd #visualization-container { border: 1px #eee solid; width: 600px; height: 300px; }
-#bd #visualization { height: 100%; width: 100% }
+#bd #visualization { height: 100%; width: 100%; }
 
 #bd .doc-entry { margin: 0 0 2em 0; }
 #bd .doc-entry pre { margin: 1em 0 1em 0; }

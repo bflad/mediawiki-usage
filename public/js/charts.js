@@ -15,7 +15,16 @@ function init(){
 
       loadData();
     }
-  
+
+    function getChartType() {
+      var chartType = $("#chart-type .selected").html();
+      return chartType == "Table" ? chartType : chartType + "Chart";
+    }
+
+    function getDataType() {
+      return $("#data-type .selected").html().toLowerCase();
+    }
+
     function jsonToPie(data) {
       var rtn = [];
       jQuery.each(data, function(index, hash) {
@@ -31,7 +40,7 @@ function init(){
         start: getUnixTime($('#startTime').val()),
         end: getUnixTime($('#endTime').val())
       },
-      jsonSource = sources[$('#dataType').val()] + '?' + $.param(queryVars) +
+      jsonSource = sources[getDataType()] + '?' + $.param(queryVars) +
         '&callback=?';
     
       $.getJSON( jsonSource, function(data) {
@@ -45,7 +54,7 @@ function init(){
     }
   
     function drawVisualization () {
-      var visType = $('#chartType').val();
+      var visType = getChartType();
       new google.visualization[visType](
         $('#visualization')[0]).
           draw(dataTable, {is3D:true});
@@ -58,13 +67,26 @@ function init(){
     }
   
     // when the chart type changes, redraw
-    $('#chartType').change(drawVisualization);
-    $('#dataType').change(loadData);
-    $('#run').click(loadData);
+    $("#chart-type").delegate("a", "click", function(e) {
+      e.preventDefault();
+      $(this).blur();
+      $("#chart-type .selected").removeClass("selected");
+      $(this).addClass("selected");
+      drawVisualization();
+    });
+    $("#data-type").delegate("a", "click", function(e) {
+      e.preventDefault();
+      $(this).blur();
+      $("#data-type .selected").removeClass("selected");
+      $(this).addClass("selected");
+      loadData();
+    });
   
     $('#endTime').val(Date.today().toString('MM/dd/yyyy'));
     $('#startTime').val(Date.today().add(-5).days().toString('MM/dd/yyyy'));
-    $('input.date').datepicker();
+    $('input.date').datepicker({
+      onSelect: function() { loadData() }
+    });
 
     $('#visualization-container').resizable({
       stop: drawVisualization,
@@ -74,9 +96,6 @@ function init(){
     // must follow all the inits, especially
     // default settings the end and start times
     googInit();
-    
-    // bleh?
-    setTimeout(drawVisualization, 4000); // redraw after 4 seconds
   });
 }
 

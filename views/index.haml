@@ -9,24 +9,36 @@
 
 #bd
   #chart-options
-    %label{ :for => "chartType" } Chart Type:
-    %select#chartType
-      %option{ :value => "BarChart" } Bar
-      %option{ :value => "ColumnChart" } Column
-      %option{ :value => "PieChart", :selected => "selected" } Pie
-      %option{ :value => "ScatterChart" } Scatter
-      %option{ :value => "Table" } Table
-  
-    %label{ :for => "dataType" } Data:
-    %select#dataType
-      %option{ :value => "editors", :selected => "selected" } Editors
-      %option{ :value => "pages" } Pages
-  
-    %label{ :for => "startTime" } Date Range:
-    %input.date#startTime
-    %label{ :for => "endTime" } to
-    %input.date#endTime
-    %button#run Run
+    #chart-type-container
+      %h2 Chart Type
+      %ul#chart-type.selectors
+        %li
+          %a{ :href => "#bar"} Bar
+        %li
+          %a{ :href => "#column"} Column
+        %li
+          %a.selected{ :href => "#pie"} Pie
+        %li
+          %a{ :href => "#scatter"} Scatter
+        %li
+          %a{ :href => "#table"} Table
+
+    #data-type-container
+      %h2 Data Type
+      %ul#data-type.selectors
+        %li
+          %a.selected{ :href => "#editors"} Editors
+        %li
+          %a{ :href => "#pages"} Pages
+
+    #date-range-container
+      %h2 Date Range
+      %input.date#startTime
+      %br
+      %br
+      %input.date#endTime
+
+    %div.clear
   
   #visualization-container
     #visualization Loading chart...
