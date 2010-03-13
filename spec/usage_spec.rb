@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe "mediawiki-usage GET /docs" do
+describe "mediawiki-usage GET /" do
   include Rack::Test::Methods
 
   def app
@@ -8,7 +8,7 @@ describe "mediawiki-usage GET /docs" do
   end
 
   it "should be successful" do
-    get '/docs'
+    get '/'
     last_response.should be_ok
   end
 end
@@ -58,7 +58,7 @@ describe "mediawiki-usage GET /count" do
   
   it "should be successful with range parameters" do
     DataMapper.stub!(:setup).and_return(true)
-    Change.stub!(:sum).and_return(0)
+    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
     
     get '/count', @params
     last_response.body.should == "{\"changes\":0}"
@@ -66,7 +66,7 @@ describe "mediawiki-usage GET /count" do
   
   it "should be successful with callback parameter" do
     DataMapper.stub!(:setup).and_return(true)
-    Change.stub!(:sum).and_return(0)
+    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
     
     get '/count', @params.merge!(:callback => "test")
     last_response.body.should == "test({\"changes\":0})"
