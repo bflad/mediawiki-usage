@@ -1,10 +1,8 @@
 require 'rubygems'
 require 'sinatra'
 require 'dm-core'
-require 'dm-aggregates'
 require 'json'
 require 'haml'
-require 'lib/change'
 
 configure :production, :development do
   THIRTY_DAYS = 2592000
