@@ -1,3 +1,21 @@
+/* Big containers */
+html { color: #222; }
+body { font-family: Helvetica, Arial; }
+#doc { margin-top: 3.5em; }
+
+/* Header */
+#hd { padding: 2em 0 1em 0; }
+#hd h1 { font-size: 242%; font-weight: bold; }
+
+/* Body */
+#bd { }
+#bd .doc-entry { margin: 0 0 2em 0; }
+#bd .doc-entry pre { margin: 1em 0 1em 0; }
+#bd .doc-entry pre code { color: #fff; background-color: #222; padding: .5em .5em .5em .5em; }
+#bd .doc-entry p { margin: 1.5em 0 0 0; }
+
+#ft h2 { font-size: 150%; font-weight: bold; margin: .5em 0 .5em 0; }
+
 #visualization-container {
   border: 1px #EEE solid;
   width: 600px; 
