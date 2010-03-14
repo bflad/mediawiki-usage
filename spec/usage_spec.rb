@@ -51,7 +51,7 @@ describe "mediawiki-usage GET /count" do
     last_response.status.should == 400
   end
 
-  it "should be unsuccessful with range parameters spanning over 10 days" do
+  it "should be unsuccessful with range parameters spanning over 30 days" do
     get '/count', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
@@ -70,6 +70,90 @@ describe "mediawiki-usage GET /count" do
     
     get '/count', @params.merge!(:callback => "test")
     last_response.body.should == "test({\"changes\":0})"
+  end
+end
+
+describe "mediawiki-usage GET /count/hour" do
+  include Rack::Test::Methods
+
+  def app
+    Sinatra::Application
+  end
+
+  before do
+    @thirty_days = 2592000
+    @params = {
+      :start => Time.now.to_i,
+      :end => (Time.now + @thirty_days).to_i
+    }
+  end
+
+  it "should be unsuccessful without range parameters" do
+    get '/count/hour'
+    last_response.status.should == 400
+  end
+
+  it "should be unsuccessful with range parameters spanning over 30 days" do
+    get '/count/hour', @params.merge!(:end => @params[:end] + 1)
+    last_response.status.should == 413
+  end
+
+  it "should be successful with range parameters" do
+    DataMapper.stub!(:setup).and_return(true)
+    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
+
+    get '/count/hour', @params
+    last_response.body.should == "[]"
+  end
+
+  it "should be successful with callback parameter" do
+    DataMapper.stub!(:setup).and_return(true)
+    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
+
+    get '/count/hour', @params.merge!(:callback => "test")
+    last_response.body.should == "test([])"
+  end
+end
+
+describe "mediawiki-usage GET /count/day" do
+  include Rack::Test::Methods
+
+  def app
+    Sinatra::Application
+  end
+
+  before do
+    @thirty_days = 2592000
+    @params = {
+      :start => Time.now.to_i,
+      :end => (Time.now + @thirty_days).to_i
+    }
+  end
+
+  it "should be unsuccessful without range parameters" do
+    get '/count/day'
+    last_response.status.should == 400
+  end
+
+  it "should be unsuccessful with range parameters spanning over 30 days" do
+    get '/count/day', @params.merge!(:end => @params[:end] + 1)
+    last_response.status.should == 413
+  end
+
+  it "should be successful with range parameters" do
+    DataMapper.stub!(:setup).and_return(true)
+    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
+
+    get '/count/day', @params
+    last_response.body.should == "[]"
+  end
+
+  it "should be successful with callback parameter" do
+    DataMapper.stub!(:setup).and_return(true)
+    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
+
+    get '/count/day', @params.merge!(:callback => "test")
+    last_response.body.should == "test([])"
   end
 end
 
@@ -93,7 +177,7 @@ describe "mediawiki-usage GET /editors" do
     last_response.status.should == 400
   end
   
-  it "should be unsuccessful with range parameters spanning over 10 days" do
+  it "should be unsuccessful with range parameters spanning over 30 days" do
     get '/editors', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
@@ -135,7 +219,7 @@ describe "mediawiki-usage GET /pages" do
       last_response.status.should == 400
   end
 
-  it "should be unsuccessful with range parameters spanning over 10 days" do
+  it "should be unsuccessful with range parameters spanning over 30 days" do
     get '/pages', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
