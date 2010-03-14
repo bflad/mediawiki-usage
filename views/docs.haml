@@ -11,6 +11,16 @@
       as the key, and the actual count of all line changes as the value.
   .doc-entry
     %pre
+      %code GET /count/hour?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
+    %p
+      Returns an array of JSON objects with hours [0-23] as the keys and line change counts as their values.
+  .doc-entry
+    %pre
+      %code GET /count/day?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
+    %p
+      Returns an array of JSON objects with days [1-31] as the keys and line change counts as their values.
+  .doc-entry
+    %pre
       %code GET /editors?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
     %p
       Returns an array of JSON objects with editor usernames as the keys and line change counts as their values.
