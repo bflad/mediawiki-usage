@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'sinatra'
 require 'dm-core'
+require 'digest/md5'
+require 'redis'
 require 'json'
 require 'haml'
 
@@ -15,6 +17,7 @@ configure :production, :development do
     :password => @config['password'],
     :database => @config['database']
   })
+  CACHE = Redis.new
 end
 
 before do
@@ -34,14 +37,36 @@ helpers do
     [start_time, end_time, difference]
   end
   
-  def query(sql, start_time, end_time)
-    repository(:default).adapter.select(sql, start_time.strftime(TIME_FORMAT), end_time.strftime(TIME_FORMAT))
+  def query_to_json(sql, type, start_time, end_time)
+    key = Digest::MD5.hexdigest("#{sql}#{type}#{start_time}#{end_time}")
+
+    value = CACHE[key]
+    if value.nil?
+      unless type.nil?
+        value = repository(:default).adapter.select(
+          sql,
+          start_time.strftime(TIME_FORMAT),
+          end_time.strftime(TIME_FORMAT)
+        ).inject([ ]) { |output, struct| output << { struct[type] => struct['total'].to_i } }.to_json
+      else
+        value = {:changes => repository(:default).adapter.select(
+          sql,
+          start_time.strftime(TIME_FORMAT),
+          end_time.strftime(TIME_FORMAT)
+        )[0].to_i}.to_json
+      end
+
+      CACHE[key] = value
+      CACHE.expire(key, 1800)
+    end
+
+    value
   end
 end
 
 get '/' do
   headers "Content-Type" => "text/html; charset=utf-8"
-  haml :index  
+  haml :index
 end
 
 get '/docs/?' do
@@ -54,22 +79,24 @@ get '/count/?*' do
 
   json = case params[:splat][0]
     when "hour"
-      query('SELECT HOUR(changed_at) as hour, SUM(line_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY HOUR(changed_at)',
+      query_to_json('SELECT HOUR(changed_at) as hour, SUM(line_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY HOUR(changed_at)',
+        "hour",
         start_time,
         end_time
-      ).inject([ ]) { |output, struct| output << { struct['hour'] => struct['total'].to_i } }.to_json
+      )
     when "day"
-      query('SELECT DAY(changed_at) as day, SUM(line_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY DAY(changed_at)',
+      query_to_json('SELECT DAY(changed_at) as day, SUM(line_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY DAY(changed_at)',
+        "day",
         start_time,
         end_time
-      ).inject([ ]) { |output, struct| output << { struct['day'] => struct['total'].to_i } }.to_json
+      )
     else
-      total = query('SELECT SUM(line_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ?',
+      query_to_json('SELECT SUM(line_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ?',
+        nil,
         start_time,
         end_time
-      )[0].to_i
-      {:changes => total}.to_json
-  end
+      )
+    end
 
   params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
 end
@@ -77,10 +104,11 @@ end
 get '/editors/?' do
   start_time, end_time, difference = sanitize(params)
 
-  json = query('SELECT DISTINCT(editor), SUM(line_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY editor',
+  json = query_to_json('SELECT DISTINCT(editor), SUM(line_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY editor',
+    "editor",
     start_time,
     end_time
-  ).inject([ ]) { |output, struct| output << { struct['editor'] => struct['total'].to_i } }.to_json
+  )
 
   params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
 end
@@ -88,10 +116,11 @@ end
 get '/pages/?' do
   start_time, end_time, difference = sanitize(params)
 
-  json = query('SELECT DISTINCT(page), SUM(line_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY page',
+  json = query_to_json('SELECT DISTINCT(page), SUM(line_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY page',
+    "page",
     start_time,
     end_time
-  ).inject([ ]) { |output, struct| output << { struct['page'] => struct['total'].to_i } }.to_json
+  )
 
   params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
 end
