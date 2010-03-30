@@ -3,6 +3,8 @@ function init(){
   jQuery(function(){
     var dataTable = null, // will contain the dataTable later
       sources = {
+        'day': 'http://moon.wharton.upenn.edu/mediawiki-usage/count/day',
+        'hour': 'http://moon.wharton.upenn.edu/mediawiki-usage/count/hour',
         'editors': 'http://moon.wharton.upenn.edu/mediawiki-usage/editors',
         'pages' : 'http://moon.wharton.upenn.edu/mediawiki-usage/pages'
       };
@@ -42,22 +44,29 @@ function init(){
       },
       jsonSource = sources[getDataType()] + '?' + $.param(queryVars) +
         '&callback=?';
-    
       $.getJSON( jsonSource, function(data) {
         // clear data table
         if (data){
           dataTable.removeRows(0, dataTable.getNumberOfRows());
           dataTable.addRows(jsonToPie(data));
-          drawVisualization ();
+          delayDrawVisualization ();
         }
       });
     }
   
+    var hasDrawn = false;
     function drawVisualization () {
+      if (hasDrawn) return;
       var visType = getChartType();
       new google.visualization[visType](
         $('#visualization')[0]).
           draw(dataTable, {is3D:true});
+      hasDrawn = true;
+    }
+    function delayDrawVisualization() {
+      hasDrawn = false;
+      drawVisualization (); // draw immediately.
+      setTimeout(drawVisualization, 2000);
     }
   
     // http://www.electrictoolbox.com/unix-timestamp-javascript/
@@ -72,7 +81,7 @@ function init(){
       $(this).blur();
       $("#chart-type .selected").removeClass("selected");
       $(this).addClass("selected");
-      drawVisualization();
+      delayDrawVisualization();
     });
     $("#data-type").delegate("a", "click", function(e) {
       e.preventDefault();
@@ -89,14 +98,14 @@ function init(){
     });
 
     $('#visualization-container').resizable({
-      stop: drawVisualization,
+      stop: delayDrawVisualization,
       autoHide: true
     });
     
     // must follow all the inits, especially
     // default settings the end and start times
     googInit();
-    setTimeout(drawVisualization, 4000);
+    delayDrawVisualization();
   });
 }
 
