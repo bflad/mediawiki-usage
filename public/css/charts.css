@@ -21,7 +21,7 @@ body { font-family: Helvetica, Arial; }
 #bd #chart-options .selectors .selected { color: #222; }
 #bd #chart-options #startTime, #endTime { border: 1px #222 solid; padding: .1em; width: 200px; font-size: 150%; }
 
-#bd #visualization-container { border: 1px #eee solid; width: 600px; height: 300px; }
+#bd #visualization-container { border: 1px #eee solid; width: 700px; height: 300px; }
 #bd #visualization { height: 100%; width: 100%; }
 
 #bd .doc-entry { margin: 0 0 2em 0; }

@@ -54,19 +54,16 @@ function init(){
       });
     }
   
-    var hasDrawn = false;
+    
     function drawVisualization () {
-      if (hasDrawn) return;
       var visType = getChartType();
       new google.visualization[visType](
         $('#visualization')[0]).
           draw(dataTable, {is3D:true});
-      hasDrawn = true;
     }
     function delayDrawVisualization() {
-      hasDrawn = false;
-      drawVisualization (); // draw immediately.
-      setTimeout(drawVisualization, 2000);
+      //drawVisualization (); // draw immediately.
+      setTimeout(drawVisualization, 1000);
     }
   
     // http://www.electrictoolbox.com/unix-timestamp-javascript/
