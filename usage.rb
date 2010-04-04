@@ -40,7 +40,7 @@ helpers do
   def query_to_json(sql, type, start_time, end_time)
     key = Digest::MD5.hexdigest("#{sql}#{type}#{start_time}#{end_time}")
 
-    value = CACHE[key]
+    value = CACHE.get(key)
     if value.nil?
       unless type.nil?
         value = repository(:default).adapter.select(
@@ -56,7 +56,7 @@ helpers do
         )[0].to_i}.to_json
       end
 
-      CACHE[key] = value
+      CACHE.set(key, value)
       CACHE.expire(key, 1800)
     end
 
