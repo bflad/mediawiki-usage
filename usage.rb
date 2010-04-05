@@ -30,13 +30,14 @@ helpers do
   end
 
   def query_to_json(sql, start_time, end_time)
-    key, h = Digest::MD5.hexdigest("#{sql}#{start_time}#{end_time}"), { }
+    key = Digest::MD5.hexdigest("#{sql}#{start_time}#{end_time}")
 
     value = CACHE.get(key)
     if value.nil?
-      DB.prepare(sql).execute(start_time, end_time).each { |k, v| v.nil? ? h[:count] = k.to_i : h[k.to_sym] = v.to_i; }
-      value = h.to_json
-      
+      value = DB.prepare(sql).execute(start_time, end_time).to_enum.
+        inject([ ]) { |a, (k,v)| v.nil? ? {:count => k.to_i} : a << {k.to_sym => v.to_i} }.
+        to_json
+
       CACHE.set(key, value)
       CACHE.expire(key, 1800)
     end
