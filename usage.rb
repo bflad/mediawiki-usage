@@ -7,7 +7,7 @@ require 'json'
 require 'yaml'
 require 'haml'
 
-configure :production, :development do
+configure [ :production, :development ] do
   THIRTY_DAYS = 2592000
   CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
   DB = Mysql.connect(CONFIG['host'], CONFIG['username'], CONFIG['password'], CONFIG['database'])
