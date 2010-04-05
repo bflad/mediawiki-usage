@@ -1,25 +1,16 @@
 require 'rubygems'
-require 'dm-core'
+require 'mysql'
 require 'openssl'
 require 'open-uri'
 require 'hpricot'
 require 'time'
 require 'yaml'
 require 'digest/md5'
-require 'lib/change'
 
-CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
 MEDIA_WIKI_URL = "https://mediawiki.wharton.upenn.edu/wcit/Special:RecentChanges"
+CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
+DB = Mysql.connect(CONFIG['host'], CONFIG['username'], CONFIG['password'], CONFIG['database'])
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
-
-DataMapper.setup(:default, {
-  :adapter => CONFIG['adapter'],
-  :host => CONFIG['host'],
-  :username => CONFIG['username'],
-  :password => CONFIG['password'],
-  :database => CONFIG['database']
-})
-DataMapper.auto_upgrade!
 
 def get_page(li)
   (li/"a").each do |link|
@@ -31,8 +22,8 @@ def get_changed_at(day, li)
   Time.parse("#{day} #{li.inner_html.scan(/;(\d\d:\d\d)/)[0][0]}")
 end
 
-def get_line_changes(li)
-  (li/"[@class~='mw-plusminus-neg']|[@class~='mw-plusminus-pos']|[@class~='mw-plusminus-null']").inner_html.scan(/[,\d]+/)[0].gsub(/,/, "")
+def get_char_changes(li)
+  (li/"[@class~='mw-plusminus-neg']|[@class~='mw-plusminus-pos']|[@class~='mw-plusminus-null']").inner_html.scan(/[,\d]+/)[0].gsub(/,/, "").to_i
 end
 
 def get_editor(li)
@@ -49,21 +40,14 @@ task :cron do
       if first_link == "diff" or first_link == "hist"
         page = get_page(change)
         changed_at = get_changed_at(day, change)
-        line_changes = get_line_changes(change)
+        char_changes = get_char_changes(change)
         editor = get_editor(change)
-        change_hash = Digest::MD5.hexdigest("#{page}#{changed_at}#{line_changes}#{editor}")
+        hash = Digest::MD5.hexdigest("#{page}#{changed_at}#{char_changes}#{editor}")
         
-        params = {:change => {
-          :change_hash => change_hash,
-          :page => page,
-          :changed_at => changed_at,
-          :line_changes => line_changes,
-          :editor => editor
-        }}
-        begin 
-          change = Change.new(params[:change])
-          change.save
-        rescue DataObjects::IntegrityError => e
+        statement = DB.prepare('INSERT INTO changes (hash,page,changed_at,char_changes,editor) VALUES (?,?,?,?,?)')
+        begin
+          statement.execute(hash, page, changed_at, char_changes, editor)
+        rescue Mysql::Error => e
           # Ignore duplicate inserts
         end
       end
