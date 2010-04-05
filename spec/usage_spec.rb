@@ -21,6 +21,9 @@ end
 
 describe "mediawiki-usage GET /count" do
   before do
+    CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
+    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => [ "0" ]))
+
     @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
@@ -39,24 +42,21 @@ describe "mediawiki-usage GET /count" do
   end
 
   it "should be successful with range parameters" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/count', @params
-    last_response.body.should == "{\"changes\":0}"
+    last_response.body.should == "{\"count\":0}"
   end
 
   it "should be successful with callback parameter" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/count', @params.merge!(:callback => "test")
-    last_response.body.should == "test({\"changes\":0})"
+    last_response.body.should == "test({\"count\":0})"
   end
 end
 
 describe "mediawiki-usage GET /count/hour" do
   before do
+    CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
+    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"12" => "0"}))
+
     @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
@@ -75,24 +75,21 @@ describe "mediawiki-usage GET /count/hour" do
   end
 
   it "should be successful with range parameters" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/count/hour', @params
-    last_response.body.should == "[]"
+    last_response.body.should == "[{\"12\":0}]"
   end
 
   it "should be successful with callback parameter" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/count/hour', @params.merge!(:callback => "test")
-    last_response.body.should == "test([])"
+    last_response.body.should == "test([{\"12\":0}])"
   end
 end
 
 describe "mediawiki-usage GET /count/day" do
   before do
+    CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
+    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"31" => "0"}))
+
     @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
@@ -111,24 +108,21 @@ describe "mediawiki-usage GET /count/day" do
   end
 
   it "should be successful with range parameters" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/count/day', @params
-    last_response.body.should == "[]"
+    last_response.body.should == "[{\"31\":0}]"
   end
 
   it "should be successful with callback parameter" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/count/day', @params.merge!(:callback => "test")
-    last_response.body.should == "test([])"
+    last_response.body.should == "test([{\"31\":0}])"
   end
 end
 
 describe "mediawiki-usage GET /editors" do
   before do
+    CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
+    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"Joker" => "0"}))
+
     @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
@@ -147,24 +141,21 @@ describe "mediawiki-usage GET /editors" do
   end
 
   it "should be successful with range parameters" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/editors', @params
-    last_response.body.should == "[]"
+    last_response.body.should == "[{\"Joker\":0}]"
   end
 
   it "should be successful with callback parameter" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/editors', @params.merge!(:callback => "test")
-    last_response.body.should == "test([])"
+    last_response.body.should == "test([{\"Joker\":0}])"
   end
 end
 
 describe "mediawiki-usage GET /pages" do
   before do
+    CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
+    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"Joker" => "0"}))
+
     @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
@@ -183,18 +174,12 @@ describe "mediawiki-usage GET /pages" do
   end
 
   it "should be successful with range parameters" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/pages', @params
-    last_response.body.should == "[]"
+    last_response.body.should == "[{\"Joker\":0}]"
   end
 
   it "should be successful with callback parameter" do
-    DataMapper.stub!(:setup).and_return(true)
-    DataMapper.repository(:default).adapter.stub!(:select).and_return([ ])
-
     get '/pages', @params.merge!(:callback => "test")
-    last_response.body.should == "test([])"
+    last_response.body.should == "test([{\"Joker\":0}])"
   end
 end

@@ -15,4 +15,6 @@ set :run, false
 set :raise_errors, true
 set :logging, false
 
+THIRTY_DAYS = 2592000
+
 def app; Sinatra::Application; end
