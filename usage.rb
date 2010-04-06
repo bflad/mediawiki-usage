@@ -35,7 +35,7 @@ helpers do
     value = CACHE.get(key)
     if value.nil?
       value = DB.prepare(sql).execute(start_time, end_time).to_enum.
-        inject([ ]) { |a, (k,v)| v.nil? ? {:count => k.to_i} : a << {k.to_sym => v.to_i} }.
+        inject([ ]) { |a, (k,v)| v.nil? ? {:count => k.to_i} : a << {k => v.to_i} }.
         to_json
 
       CACHE.set(key, value)
