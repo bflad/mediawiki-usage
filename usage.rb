@@ -12,6 +12,13 @@ configure :development, :production do
   CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
   DB = Mysql.connect(CONFIG['host'], CONFIG['username'], CONFIG['password'], CONFIG['database'])
   CACHE = Redis.new
+
+  begin
+    CACHE.info
+    CACHE_CONNECTED = true
+  rescue Errno::ECONNREFUSED
+    CACHE_CONNECTED = false
+  end
 end
 
 before do
@@ -32,14 +39,14 @@ helpers do
   def query_to_json(sql, start_time, end_time)
     key = Digest::MD5.hexdigest("#{sql}#{start_time}#{end_time}")
 
-    value = CACHE.get(key)
+    value = CACHE_CONNECTED ? CACHE.get(key) : nil
     if value.nil?
       value = DB.prepare(sql).execute(start_time, end_time).to_enum.
         inject([ ]) { |a, (k,v)| v.nil? ? {:count => k.to_i} : a << {k => v.to_i} }.
         to_json
 
-      CACHE.set(key, value)
-      CACHE.expire(key, 1800)
+      CACHE.set(key, value) if CACHE_CONNECTED
+      CACHE.expire(key, 1800) if CACHE_CONNECTED
     end
 
     value
