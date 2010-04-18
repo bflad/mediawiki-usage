@@ -11,7 +11,7 @@ require 'haml'
 
 configure :development, :production do
   THIRTY_DAYS = 2592000
-  FORTY_EIGHT_HOURS = 172800
+  TWENTY_FOUR_HOURS = 86400
   CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
   DB = Mysql.connect(CONFIG['host'], CONFIG['username'], CONFIG['password'], CONFIG['database'])
   CACHE = Redis.new
@@ -30,7 +30,7 @@ helpers do
   end
 
   def sanitize(params)
-    start_time = params[:start].nil? ? (Time.now - FORTY_EIGHT_HOURS) : Time.at(params[:start].to_i)
+    start_time = params[:start].nil? ? (Time.now - TWENTY_FOUR_HOURS) : Time.at(params[:start].to_i)
     end_time = params[:end].nil? ? (Time.now) : Time.at(params[:end].to_i)
     difference = (end_time - start_time).to_i
 

@@ -1,6 +1,6 @@
 ENV["RACK_ENV"] = "test"
 THIRTY_DAYS = 2592000
-FORTY_EIGHT_HOURS = 172800
+TWENTY_FOUR_HOURS = 86400
 
 require File.join(File.dirname(__FILE__), '..', 'usage.rb')
 
