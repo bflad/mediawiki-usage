@@ -11,6 +11,7 @@ require 'haml'
 
 configure :development, :production do
   THIRTY_DAYS = 2592000
+  FORTY_EIGHT_HOURS = 172800
   CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
   DB = Mysql.connect(CONFIG['host'], CONFIG['username'], CONFIG['password'], CONFIG['database'])
   CACHE = Redis.new
@@ -29,13 +30,13 @@ helpers do
   end
 
   def sanitize(params)
-    start_time = params[:start].nil? ? (Time.now - THIRTY_DAYS) : Time.at(params[:start].to_i)
+    start_time = params[:start].nil? ? (Time.now - FORTY_EIGHT_HOURS) : Time.at(params[:start].to_i)
     end_time = params[:end].nil? ? (Time.now) : Time.at(params[:end].to_i)
     difference = (end_time - start_time).to_i
 
     throw :halt, [413, {:message => "Request Entity Too Large"}.to_json] unless difference > 0 and difference <= THIRTY_DAYS
 
-    content_type = params[:captures].nil? ? "application/json; charset=utf-8" : capture_to_mime(params[:captures].first)
+    content_type = params[:captures].nil? ? "application/json; charset=utf-8" : capture_to_mime(params[:captures].last)
     headers "Content-Type" => content_type
 
     [ start_time, end_time, content_type ]
@@ -65,7 +66,7 @@ helpers do
       data = DB.prepare(sql).execute(start_time, end_time).to_enum.
         inject({ }) { |a, (k,v)| v.nil? ? a[:count] = k.to_i : a[k] = v.to_i; a }
 
-      value = open(Gchart.pie(:size => '500x400', :data => data.values, :labels => data.keys, :bar_colors => ['0000FF']).gsub(/\|/, '%7C')).read
+      value = open(Gchart.pie(:size => '700x400', :data => data.values, :labels => data.keys, :bar_colors => ['0000FF']).gsub(/\|/, '%7C')).read
 
       CACHE.set(key, value) if CACHE_CONNECTED
       CACHE.expire(key, 1800) if CACHE_CONNECTED
@@ -85,28 +86,27 @@ get '/docs/?' do
   haml :docs
 end
 
-get '/count/?*' do
+get %r{/count\/?(hour|day)?\/?(recent.js|recent.png)?} do
   start_time, end_time, content_type = sanitize(params)
 
-  json = case params[:splat][0]
+  params[:captures] ||= [ ]
+  json = case params[:captures].first
     when "hour"
-      query_to_json('SELECT HOUR(changed_at) as hour, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY HOUR(changed_at)',
-        start_time,
-        end_time
-      )
+      sql = "SELECT HOUR(changed_at) as hour, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY HOUR(changed_at)"
     when "day"
-      query_to_json('SELECT DAY(changed_at) as day, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY DAY(changed_at)',
-        start_time,
-        end_time
-      )
+      sql = "SELECT DAY(changed_at) as day, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY DAY(changed_at)"
     else
-      query_to_json('SELECT SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ?',
-        start_time,
-        end_time
-      )
+      sql = "SELECT SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ?"
+      content_type = ""
   end
 
-  params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
+  case content_type
+    when "image/png"
+      query_to_png(sql, start_time, end_time)
+    else
+      json = query_to_json(sql, start_time, end_time)
+      params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
+  end
 end
 
 get %r{/editors\/?(recent.js|recent.png)?} do
