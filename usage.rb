@@ -122,13 +122,15 @@ get %r{/editors\/?(recent.js|recent.png)?} do
   end
 end
 
-get '/pages/?' do
+get %r{/pages\/?(recent.js|recent.png)?} do
   start_time, end_time, content_type = sanitize(params)
 
-  json = query_to_json('SELECT DISTINCT(page), SUM(char_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY page',
-    start_time,
-    end_time
-  )
-
-  params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
+  sql = "SELECT DISTINCT(page), SUM(char_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY page"
+  case content_type
+    when "image/png"
+      query_to_png(sql, start_time, end_time)
+    else
+      json = query_to_json(sql, start_time, end_time)
+      params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
+  end
 end
