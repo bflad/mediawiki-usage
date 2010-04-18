@@ -21,9 +21,29 @@
       Returns an array of JSON objects with days [1-31] as the keys and line change counts as their values.
   .doc-entry
     %pre
+      %code GET /editors/recent.js
+    %p
+      Returns an array of JSON objects for the past 24 hours with editor usernames as the keys and line change counts as their values.
+  .doc-entry
+    %pre
+      %code GET /editors/recent.png
+    %p
+      Returns an pie chart PNG of editors for the past 24 hours.
+  .doc-entry
+    %pre
       %code GET /editors?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
     %p
       Returns an array of JSON objects with editor usernames as the keys and line change counts as their values.
+  .doc-entry
+    %pre
+      %code GET /pages/recent.js
+    %p
+      Returns an array of JSON objects for the past 24 hours with page usernames as the keys and line change counts as their values.
+  .doc-entry
+    %pre
+      %code GET /pages/recent.png
+    %p
+      Returns an pie chart PNG of pages for the past 24 hours.
   .doc-entry
     %pre
       %code GET /pages?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
