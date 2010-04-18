@@ -25,10 +25,9 @@ describe "mediawiki-usage GET /count" do
     DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => [ "0" ]))
     CACHE_CONNECTED = true
 
-    @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
-      :end => (Time.now + @thirty_days).to_i
+      :end => (Time.now + THIRTY_DAYS).to_i
     }
   end
 
@@ -59,10 +58,9 @@ describe "mediawiki-usage GET /count/hour" do
     DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"12" => "0"}))
     CACHE_CONNECTED = true
 
-    @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
-      :end => (Time.now + @thirty_days).to_i
+      :end => (Time.now + THIRTY_DAYS).to_i
     }
   end
 
@@ -137,10 +135,9 @@ describe "mediawiki-usage GET /count/day" do
     DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"31" => "0"}))
     CACHE_CONNECTED = true
 
-    @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
-      :end => (Time.now + @thirty_days).to_i
+      :end => (Time.now + THIRTY_DAYS).to_i
     }
   end
 
@@ -215,10 +212,9 @@ describe "mediawiki-usage GET /editors" do
     DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"Joker" => "0"}))
     CACHE_CONNECTED = true
 
-    @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
-      :end => (Time.now + @thirty_days).to_i
+      :end => (Time.now + THIRTY_DAYS).to_i
     }
   end
 
@@ -293,10 +289,9 @@ describe "mediawiki-usage GET /pages" do
     DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"Joker" => "0"}))
     CACHE_CONNECTED = true
 
-    @thirty_days = 2592000
     @params = {
       :start => Time.now.to_i,
-      :end => (Time.now + @thirty_days).to_i
+      :end => (Time.now + THIRTY_DAYS).to_i
     }
   end
 
