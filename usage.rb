@@ -86,7 +86,7 @@ get '/docs/?' do
   haml :docs
 end
 
-get %r{/count\/?(hour|day)?\/?(recent.js|recent.png)?} do
+get %r{/count\/?(hour|day)?\/?} do
   start_time, end_time, content_type = sanitize(params)
 
   params[:captures] ||= [ ]
@@ -97,16 +97,10 @@ get %r{/count\/?(hour|day)?\/?(recent.js|recent.png)?} do
       sql = "SELECT DAY(changed_at) as day, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY DAY(changed_at)"
     else
       sql = "SELECT SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ?"
-      content_type = ""
   end
 
-  case content_type
-    when "image/png"
-      query_to_png(sql, start_time, end_time)
-    else
-      json = query_to_json(sql, start_time, end_time)
-      params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
-  end
+  json = query_to_json(sql, start_time, end_time)
+  params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
 end
 
 get %r{/editors\/?(recent.js|recent.png)?} do
