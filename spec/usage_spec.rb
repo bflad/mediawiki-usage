@@ -71,8 +71,34 @@ describe "mediawiki-usage GET /count/hour" do
     last_response.status.should == 200
   end
 
+  it "should be successful without range parameters and recent.js" do
+    get '/count/hour/recent.js'
+    last_response.status.should == 200
+  end
+
+  it "should be successful without range parameters and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/count/hour/recent.png'
+    last_response.status.should == 200
+  end
+
   it "should be unsuccessful with range parameters spanning over 30 days" do
     get '/count/hour', @params.merge!(:end => @params[:end] + 1)
+    last_response.status.should == 413
+  end
+
+  it "should be unsuccessful with range parameters spanning over 30 days and recent.js" do
+    get '/count/hour/recent.js', @params.merge!(:end => @params[:end] + 1)
+    last_response.status.should == 413
+  end
+
+  it "should be unsuccessful with range parameters spanning over 30 days and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/count/hour/recent.png', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
@@ -81,8 +107,26 @@ describe "mediawiki-usage GET /count/hour" do
     last_response.body.should == "[{\"12\":0}]"
   end
 
+  it "should be successful with range parameters and recent.js" do
+    get '/count/hour/recent.js', @params
+    last_response.body.should == "[{\"12\":0}]"
+  end
+
+  it "should be successful with range parameters and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/count/hour/recent.png', @params
+    last_response.headers["Content-Type"] == "image/png"
+  end
+
   it "should be successful with callback parameter" do
     get '/count/hour', @params.merge!(:callback => "test")
+    last_response.body.should == "test([{\"12\":0}])"
+  end
+
+  it "should be successful with callback parameter and recent.js" do
+    get '/count/day/recent.js', @params.merge!(:callback => "test")
     last_response.body.should == "test([{\"12\":0}])"
   end
 end
@@ -105,8 +149,34 @@ describe "mediawiki-usage GET /count/day" do
     last_response.status.should == 200
   end
 
+  it "should be successful without range parameters and recent.js" do
+    get '/count/day/recent.js'
+    last_response.status.should == 200
+  end
+
+  it "should be successful without range parameters and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/count/day/recent.png'
+    last_response.status.should == 200
+  end
+
   it "should be unsuccessful with range parameters spanning over 30 days" do
     get '/count/day', @params.merge!(:end => @params[:end] + 1)
+    last_response.status.should == 413
+  end
+
+  it "should be unsuccessful with range parameters spanning over 30 days and recent.js" do
+    get '/count/day/recent.js', @params.merge!(:end => @params[:end] + 1)
+    last_response.status.should == 413
+  end
+
+  it "should be unsuccessful with range parameters spanning over 30 days and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/count/day/recent.png', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
@@ -115,8 +185,26 @@ describe "mediawiki-usage GET /count/day" do
     last_response.body.should == "[{\"31\":0}]"
   end
 
+  it "should be successful with range parameters and recent.js" do
+    get '/count/day/recent.js', @params
+    last_response.body.should == "[{\"31\":0}]"
+  end
+
+  it "should be successful with range parameters and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/count/day/recent.png', @params
+    last_response.headers["Content-Type"] == "image/png"
+  end
+
   it "should be successful with callback parameter" do
     get '/count/day', @params.merge!(:callback => "test")
+    last_response.body.should == "test([{\"31\":0}])"
+  end
+
+  it "should be successful with callback parameter and recent.js" do
+    get '/count/day/recent.js', @params.merge!(:callback => "test")
     last_response.body.should == "test([{\"31\":0}])"
   end
 end
