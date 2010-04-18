@@ -217,8 +217,34 @@ describe "mediawiki-usage GET /pages" do
       last_response.status.should == 200
   end
 
+  it "should be successful without range parameters and recent.js" do
+    get '/pages/recent.js'
+    last_response.status.should == 200
+  end
+
+  it "should be successful without range parameters and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/pages/recent.png'
+    last_response.status.should == 200
+  end
+
   it "should be unsuccessful with range parameters spanning over 30 days" do
     get '/pages', @params.merge!(:end => @params[:end] + 1)
+    last_response.status.should == 413
+  end
+
+  it "should be unsuccessful with range parameters spanning over 30 days and recent.js" do
+    get '/pages/recent.js', @params.merge!(:end => @params[:end] + 1)
+    last_response.status.should == 413
+  end
+
+  it "should be unsuccessful with range parameters spanning over 30 days and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/pages/recent.png', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
@@ -227,8 +253,26 @@ describe "mediawiki-usage GET /pages" do
     last_response.body.should == "[{\"Joker\":0}]"
   end
 
+  it "should be successful with range parameters and recent.js" do
+    get '/pages/recent.js', @params
+    last_response.body.should == "[{\"Joker\":0}]"
+  end
+
+  it "should be successful with range parameters and recent.png" do
+    response = mock(Object, :read => "png")
+    OpenURI.stub!(:open_uri => response)
+
+    get '/pages/recent.png', @params
+    last_response.headers["Content-Type"] == "image/png"
+  end
+
   it "should be successful with callback parameter" do
     get '/pages', @params.merge!(:callback => "test")
+    last_response.body.should == "test([{\"Joker\":0}])"
+  end
+
+  it "should be successful with callback parameter and recent.js" do
+    get '/pages/recent.js', @params.merge!(:callback => "test")
     last_response.body.should == "test([{\"Joker\":0}])"
   end
 end
