@@ -32,22 +32,22 @@ describe "mediawiki-usage GET /count" do
   end
 
   it "should be successful without range parameters" do
-    get '/count'
+    get '/count.json'
     last_response.status.should == 200
   end
 
   it "should be unsuccessful with range parameters spanning over 30 days" do
-    get '/count', @params.merge!(:end => @params[:end] + 1)
+    get '/count.json', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
   it "should be successful with range parameters" do
-    get '/count', @params
+    get '/count.json', @params
     last_response.body.should == "{\"count\":0}"
   end
 
   it "should be successful with callback parameter" do
-    get '/count', @params.merge!(:callback => "test")
+    get '/count.json', @params.merge!(:callback => "test")
     last_response.body.should == "test({\"count\":0})"
   end
 end
@@ -65,22 +65,22 @@ describe "mediawiki-usage GET /count/hour" do
   end
 
   it "should be successful without range parameters" do
-    get '/count/hour'
+    get '/count/hour.json'
     last_response.status.should == 200
   end
 
   it "should be unsuccessful with range parameters spanning over 30 days" do
-    get '/count/hour', @params.merge!(:end => @params[:end] + 1)
+    get '/count/hour.json', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
   it "should be successful with range parameters" do
-    get '/count/hour', @params
+    get '/count/hour.json', @params
     last_response.body.should == "[{\"12\":0}]"
   end
 
   it "should be successful with callback parameter" do
-    get '/count/hour', @params.merge!(:callback => "test")
+    get '/count/hour.json', @params.merge!(:callback => "test")
     last_response.body.should == "test([{\"12\":0}])"
   end
 end
@@ -98,22 +98,22 @@ describe "mediawiki-usage GET /count/day" do
   end
 
   it "should be successful without range parameters" do
-    get '/count/day'
+    get '/count/day.json'
     last_response.status.should == 200
   end
 
   it "should be unsuccessful with range parameters spanning over 30 days" do
-    get '/count/day', @params.merge!(:end => @params[:end] + 1)
+    get '/count/day.json', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
   it "should be successful with range parameters" do
-    get '/count/day', @params
+    get '/count/day.json', @params
     last_response.body.should == "[{\"31\":0}]"
   end
 
   it "should be successful with callback parameter" do
-    get '/count/day', @params.merge!(:callback => "test")
+    get '/count/day.json', @params.merge!(:callback => "test")
     last_response.body.should == "test([{\"31\":0}])"
   end
 end
@@ -131,12 +131,7 @@ describe "mediawiki-usage GET /editors" do
   end
 
   it "should be successful without range parameters" do
-    get '/editors'
-    last_response.status.should == 200
-  end
-
-  it "should be successful without range parameters and recent.js" do
-    get '/editors/recent.js'
+    get '/editors.json'
     last_response.status.should == 200
   end
 
@@ -144,17 +139,12 @@ describe "mediawiki-usage GET /editors" do
     response = mock(Object, :read => "png")
     OpenURI.stub!(:open_uri => response)
 
-    get '/editors/recent.png'
+    get '/editors.png'
     last_response.status.should == 200
   end
 
   it "should be unsuccessful with range parameters spanning over 30 days" do
-    get '/editors', @params.merge!(:end => @params[:end] + 1)
-    last_response.status.should == 413
-  end
-
-  it "should be unsuccessful with range parameters spanning over 30 days and recent.js" do
-    get '/editors/recent.js', @params.merge!(:end => @params[:end] + 1)
+    get '/editors.json', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
@@ -162,17 +152,12 @@ describe "mediawiki-usage GET /editors" do
     response = mock(Object, :read => "png")
     OpenURI.stub!(:open_uri => response)
 
-    get '/editors/recent.png', @params.merge!(:end => @params[:end] + 1)
+    get '/editors.png', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
   it "should be successful with range parameters" do
-    get '/editors', @params
-    last_response.body.should == "[{\"Joker\":0}]"
-  end
-
-  it "should be successful with range parameters and recent.js" do
-    get '/editors/recent.js', @params
+    get '/editors.json', @params
     last_response.body.should == "[{\"Joker\":0}]"
   end
 
@@ -180,17 +165,12 @@ describe "mediawiki-usage GET /editors" do
     response = mock(Object, :read => "png")
     OpenURI.stub!(:open_uri => response)
 
-    get '/editors/recent.png', @params
+    get '/editors.png', @params
     last_response.headers["Content-Type"] == "image/png"
   end
 
   it "should be successful with callback parameter" do
-    get '/editors', @params.merge!(:callback => "test")
-    last_response.body.should == "test([{\"Joker\":0}])"
-  end
-  
-  it "should be successful with callback parameter and recent.js" do
-    get '/editors/recent.js', @params.merge!(:callback => "test")
+    get '/editors.json', @params.merge!(:callback => "test")
     last_response.body.should == "test([{\"Joker\":0}])"
   end
 end
@@ -208,30 +188,20 @@ describe "mediawiki-usage GET /pages" do
   end
 
   it "should be successful without range parameters" do
-      get '/pages'
+      get '/pages.json'
       last_response.status.should == 200
-  end
-
-  it "should be successful without range parameters and recent.js" do
-    get '/pages/recent.js'
-    last_response.status.should == 200
   end
 
   it "should be successful without range parameters and recent.png" do
     response = mock(Object, :read => "png")
     OpenURI.stub!(:open_uri => response)
 
-    get '/pages/recent.png'
+    get '/pages.png'
     last_response.status.should == 200
   end
 
   it "should be unsuccessful with range parameters spanning over 30 days" do
-    get '/pages', @params.merge!(:end => @params[:end] + 1)
-    last_response.status.should == 413
-  end
-
-  it "should be unsuccessful with range parameters spanning over 30 days and recent.js" do
-    get '/pages/recent.js', @params.merge!(:end => @params[:end] + 1)
+    get '/pages.json', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
@@ -239,17 +209,12 @@ describe "mediawiki-usage GET /pages" do
     response = mock(Object, :read => "png")
     OpenURI.stub!(:open_uri => response)
 
-    get '/pages/recent.png', @params.merge!(:end => @params[:end] + 1)
+    get '/pages.png', @params.merge!(:end => @params[:end] + 1)
     last_response.status.should == 413
   end
 
   it "should be successful with range parameters" do
-    get '/pages', @params
-    last_response.body.should == "[{\"Joker\":0}]"
-  end
-
-  it "should be successful with range parameters and recent.js" do
-    get '/pages/recent.js', @params
+    get '/pages.json', @params
     last_response.body.should == "[{\"Joker\":0}]"
   end
 
@@ -257,17 +222,12 @@ describe "mediawiki-usage GET /pages" do
     response = mock(Object, :read => "png")
     OpenURI.stub!(:open_uri => response)
 
-    get '/pages/recent.png', @params
+    get '/pages.png', @params
     last_response.headers["Content-Type"] == "image/png"
   end
 
   it "should be successful with callback parameter" do
-    get '/pages', @params.merge!(:callback => "test")
-    last_response.body.should == "test([{\"Joker\":0}])"
-  end
-
-  it "should be successful with callback parameter and recent.js" do
-    get '/pages/recent.js', @params.merge!(:callback => "test")
+    get '/pages.json', @params.merge!(:callback => "test")
     last_response.body.should == "test([{\"Joker\":0}])"
   end
 end
