@@ -32,7 +32,6 @@ helpers do
     when /\.json/
       "application/json; charset=utf-8"
     else
-      p "here"
       "application/json; charset=utf-8"
     end
   end
