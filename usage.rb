@@ -26,7 +26,15 @@ end
 
 helpers do
   def capture_to_mime(capture)
-    capture =~ /\.png/ ? "image/png" : "application/json; charset=utf-8"
+    case capture
+    when /\.png/
+      "image/png"
+    when /\.json/
+      "application/json; charset=utf-8"
+    else
+      p "here"
+      "application/json; charset=utf-8"
+    end
   end
 
   def sanitize(params)
@@ -36,7 +44,7 @@ helpers do
 
     throw :halt, [413, {:message => "Request Entity Too Large"}.to_json] unless difference > 0 and difference <= THIRTY_DAYS
 
-    content_type = params[:captures].nil? ? "application/json; charset=utf-8" : capture_to_mime(params[:captures].last)
+    content_type = capture_to_mime(params[:captures].nil? ? nil : params[:captures].last)
     headers "Content-Type" => content_type
 
     [ start_time, end_time, content_type ]
@@ -86,7 +94,7 @@ get '/docs/?' do
   haml :docs
 end
 
-get %r{/count\/?(hour|day)?\/?} do
+get %r{/count\/?(hour|day)?\/?(.json)?} do
   start_time, end_time, content_type = sanitize(params)
 
   params[:captures] ||= [ ]
@@ -103,7 +111,7 @@ get %r{/count\/?(hour|day)?\/?} do
   params[:callback].nil? ? json : "#{params[:callback]}(#{json})"
 end
 
-get %r{/editors\/?(recent.js|recent.png)?} do
+get %r{/editors\/?(.json|.png)?} do
   start_time, end_time, content_type = sanitize(params)
 
   sql = "SELECT DISTINCT(editor), SUM(char_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY editor"
@@ -116,7 +124,7 @@ get %r{/editors\/?(recent.js|recent.png)?} do
   end
 end
 
-get %r{/pages\/?(recent.js|recent.png)?} do
+get %r{/pages\/?(.json|.png)?} do
   start_time, end_time, content_type = sanitize(params)
 
   sql = "SELECT DISTINCT(page), SUM(char_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY page"
