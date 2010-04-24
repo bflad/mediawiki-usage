@@ -3,10 +3,10 @@ function init(){
   jQuery(function(){
     var dataTable = null, // will contain the dataTable later
       sources = {
-        'day': 'http://moon.wharton.upenn.edu/mediawiki-usage/count/day',
-        'hour': 'http://moon.wharton.upenn.edu/mediawiki-usage/count/hour',
-        'editors': 'http://moon.wharton.upenn.edu/mediawiki-usage/editors',
-        'pages' : 'http://moon.wharton.upenn.edu/mediawiki-usage/pages'
+        'day': 'http://moon.wharton.upenn.edu/mediawiki-usage/count/day.json',
+        'hour': 'http://moon.wharton.upenn.edu/mediawiki-usage/count/hour.json',
+        'editors': 'http://moon.wharton.upenn.edu/mediawiki-usage/editors.json',
+        'pages' : 'http://moon.wharton.upenn.edu/mediawiki-usage/pages.json'
       };
   
     function googInit () {
