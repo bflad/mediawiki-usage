@@ -4,55 +4,35 @@
 #bd
   .doc-entry
     %pre
-      %code GET /count?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
+      %code GET /count.json?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
     %p
       Returns a JSON object with
       %code count
       as the key, and the actual count of all line changes as the value.
   .doc-entry
     %pre
-      %code GET /count/hour?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
+      %code GET /count/hour.json?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
     %p
       Returns an array of JSON objects with hours [0-23] as the keys and line change counts as their values.
   .doc-entry
     %pre
-      %code GET /count/day?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
+      %code GET /count/day.json?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
     %p
       Returns an array of JSON objects with days [1-31] as the keys and line change counts as their values.
   .doc-entry
     %pre
-      %code GET /editors/recent.js
+      %code GET /editors.(json|png)?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
     %p
-      Returns an array of JSON objects for the past 24 hours with editor usernames as the keys and line change counts as their values.
+      Returns an array of JSON objects or a PNG image with editor usernames and line change counts.
   .doc-entry
     %pre
-      %code GET /editors/recent.png
+      %code GET /pages.(json|png)?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
     %p
-      Returns an pie chart PNG of editors for the past 24 hours.
-  .doc-entry
-    %pre
-      %code GET /editors?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
-    %p
-      Returns an array of JSON objects with editor usernames as the keys and line change counts as their values.
-  .doc-entry
-    %pre
-      %code GET /pages/recent.js
-    %p
-      Returns an array of JSON objects for the past 24 hours with page usernames as the keys and line change counts as their values.
-  .doc-entry
-    %pre
-      %code GET /pages/recent.png
-    %p
-      Returns an pie chart PNG of pages for the past 24 hours.
-  .doc-entry
-    %pre
-      %code GET /pages?start=[UNIX Timestamp]&end=[UNIX Timestamp]&callback=[*Local Function Name]
-    %p
-      Returns an array of JSON objects with page names as the keys and line change counts as the values.
+      Returns an array of JSON objects or a PNG image with page names and line change counts.
 #ft
   %h2 Optional
   %p
-    Providing a callback function is optional. To utilize JSON-P with jQuery, set
+    Providing a callback function is optional and will not work with a PNG request. To utilize JSON-P with jQuery, set
     %code callback
     to
     %code ?.
