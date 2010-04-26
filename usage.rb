@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'sinatra'
-require 'mysql'
+require 'mysql2'
 require 'redis'
 require 'digest/md5'
 require 'open-uri'
@@ -13,7 +13,7 @@ configure :development, :production do
   THIRTY_DAYS = 2592000
   TWENTY_FOUR_HOURS = 86400
   CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
-  DB = Mysql.connect(CONFIG['host'], CONFIG['username'], CONFIG['password'], CONFIG['database'])
+  DB = Mysql2::Client.new(:host => CONFIG['host'], :username => CONFIG['username'], :password => CONFIG['password'], :database => CONFIG['database'])
   CACHE = Redis.new
 
   begin
@@ -54,8 +54,8 @@ helpers do
 
     value = CACHE_CONNECTED ? CACHE.get(key) : nil
     if value.nil?
-      value = DB.prepare(sql).execute(start_time, end_time).to_enum.
-        inject([ ]) { |a, (k,v)| v.nil? ? {:count => k.to_i} : a << {k => v.to_i} }.
+      value = DB.query(sql % [ start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S') ]).to_a.
+        inject([ ]) { |a, h| h = h.values; h.length > 1 ? a << {h.last => h.first.to_i} : {:count => h.first.to_i} }.
         to_json
 
       CACHE.set(key, value) if CACHE_CONNECTED
@@ -70,8 +70,8 @@ helpers do
 
     value = CACHE_CONNECTED ? CACHE.get(key) : nil
     if value.nil?
-      data = DB.prepare(sql).execute(start_time, end_time).to_enum.
-        inject({ }) { |a, (k,v)| v.nil? ? a[:count] = k.to_i : a[k] = v.to_i; a }
+      data = DB.query(sql % [ start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S') ]).to_a.
+        inject({ }) { |a, h| h = h.values; a[h.last] = h.first.to_i; a }
 
       value = open(Gchart.pie(:size => '700x400', :data => data.values, :labels => data.keys, :bar_colors => ['0000FF']).gsub(/\|/, '%7C')).read
 
@@ -99,11 +99,11 @@ get %r{/count\/?(hour|day)?\/?(.json)?} do
   params[:captures] ||= [ ]
   json = case params[:captures].first
     when "hour"
-      sql = "SELECT HOUR(changed_at) as hour, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY HOUR(changed_at)"
+      sql = "SELECT HOUR(changed_at) as hour, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN '%s' AND '%s' GROUP BY HOUR(changed_at)"
     when "day"
-      sql = "SELECT DAY(changed_at) as day, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY DAY(changed_at)"
+      sql = "SELECT DAY(changed_at) as day, SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN '%s' AND '%s' GROUP BY DAY(changed_at)"
     else
-      sql = "SELECT SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN ? AND ?"
+      sql = "SELECT SUM(char_changes) as total FROM changes WHERE changed_at BETWEEN '%s' AND '%s'"
   end
 
   json = query_to_json(sql, start_time, end_time)
@@ -113,7 +113,7 @@ end
 get %r{/editors\/?(.json|.png)?} do
   start_time, end_time, content_type = sanitize(params)
 
-  sql = "SELECT DISTINCT(editor), SUM(char_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY editor"
+  sql = "SELECT DISTINCT(editor), SUM(char_changes) AS total FROM changes WHERE changed_at BETWEEN '%s' AND '%s' GROUP BY editor"
   case content_type
     when "image/png"
       query_to_png(sql, start_time, end_time)
@@ -126,7 +126,7 @@ end
 get %r{/pages\/?(.json|.png)?} do
   start_time, end_time, content_type = sanitize(params)
 
-  sql = "SELECT DISTINCT(page), SUM(char_changes) AS total FROM changes WHERE changed_at BETWEEN ? AND ? GROUP BY page"
+  sql = "SELECT DISTINCT(page), SUM(char_changes) AS total FROM changes WHERE changed_at BETWEEN '%s' AND '%s' GROUP BY page"
   case content_type
     when "image/png"
       query_to_png(sql, start_time, end_time)
