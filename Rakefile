@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'mysql'
+require 'mysql2'
 require 'openssl'
 require 'open-uri'
 require 'hpricot'
@@ -9,7 +9,7 @@ require 'digest/md5'
 
 MEDIA_WIKI_URL = "https://mediawiki.wharton.upenn.edu/wcit/Special:RecentChanges"
 CONFIG = YAML.load_file("config/database.yml") if File.exists?("config/database.yml")
-DB = Mysql.connect(CONFIG['host'], CONFIG['username'], CONFIG['password'], CONFIG['database'])
+DB = Mysql2::Client.new(:host => CONFIG['host'], :username => CONFIG['username'], :password => CONFIG['password'], :database => CONFIG['database'])
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
 def get_page(li)
@@ -43,15 +43,15 @@ task :cron do
         char_changes = get_char_changes(change)
         editor = get_editor(change)
         hash = Digest::MD5.hexdigest("#{page}#{changed_at}#{char_changes}#{editor}")
-        
-        statement = DB.prepare('INSERT INTO changes (hash,page,changed_at,char_changes,editor) VALUES (?,?,?,?,?)')
+
         begin
-          statement.execute(hash, page, changed_at, char_changes, editor)
-        rescue Mysql::Error => e
+          DB.query("INSERT INTO changes (hash,page,changed_at,char_changes,editor) VALUES ('%s','%s','%s',%d,'%s')" % [
+            hash, DB.escape(page), changed_at.strftime('%Y-%m-%d %H:%M:%S'), char_changes, DB.escape(editor)
+          ])
+        rescue Mysql2::Error => e
           # Ignore duplicate inserts
         end
       end
     end
   end
 end
-
