@@ -22,7 +22,7 @@ end
 describe "mediawiki-usage GET /count" do
   before do
     CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
-    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => [ "0" ]))
+    DB = mock(Mysql2, :query => [{"count" => "0"}])
     CACHE_CONNECTED = true
 
     @params = {
@@ -55,7 +55,7 @@ end
 describe "mediawiki-usage GET /count/hour" do
   before do
     CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
-    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"12" => "0"}))
+    DB = mock(Mysql2, :query => [{"hour" => "12", "total" => "0"}])
     CACHE_CONNECTED = true
 
     @params = {
@@ -88,7 +88,7 @@ end
 describe "mediawiki-usage GET /count/day" do
   before do
     CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
-    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"31" => "0"}))
+    DB = mock(Mysql2, :query => [{"day" => "31", "total" => "0"}])
     CACHE_CONNECTED = true
 
     @params = {
@@ -121,7 +121,7 @@ end
 describe "mediawiki-usage GET /editors" do
   before do
     CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
-    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"Joker" => "0"}))
+    DB = mock(Mysql2, :query => [{"editor" => "Joker", "total" => "0"}])
     CACHE_CONNECTED = true
 
     @params = {
@@ -178,7 +178,7 @@ end
 describe "mediawiki-usage GET /pages" do
   before do
     CACHE = mock(Redis, :get => nil, :set => true, :expire => true)
-    DB = mock(Mysql, :prepare => mock(Mysql::Stmt, :execute => {"Joker" => "0"}))
+    DB = mock(Mysql2, :query => [{"page" => "Joker", "total" => "0"}])
     CACHE_CONNECTED = true
 
     @params = {
